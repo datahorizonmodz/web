@@ -169,7 +169,21 @@
       text-align: center; 
       padding: 15px; 
       font-size: 13px; 
-      color: #888; 
+      color: #888;
+    /* Tombol VIEW ALL versi link */
+.view-all-btn {
+  background: #007bff;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-block;
+  transition: 0.2s;
+}
+.view-all-btn:hover {
+  background: #0056cc;
+}
     }
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -202,7 +216,7 @@
   <section>
     <div class="section-title">
       <span>📱 Aplikasi MOD Populer</span>
-      <button>VIEW ALL</button>
+      <a href="https://datahorizonmodz.github.io/aplikasimodz/" class="view-all-btn">VIEW ALL</a>
     </div>
     <div id="modGrid" class="app-grid"></div>
   </section>
@@ -210,7 +224,7 @@
   <section>
     <div class="section-title blue">
       <span>💎 Aplikasi MOD Lainnya</span>
-      <button>VIEW ALL</button>
+      <a href="https://datahorizonmodz.github.io/aplikasimodz/" class="view-all-btn">VIEW ALL</a>
     </div>
     <div id="premiumList" class="app-list"></div>
   </section>
