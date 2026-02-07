@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kontak Saya - DATA HORIZON</title>
+
+  <!-- Tambahan font Work Sans -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+  </style>
+
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: "Work Sans", sans-serif; /* ganti dari Poppins ke Work Sans */
+    }
+    body { background: #fff; color: #333; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      padding: 12px 20px;
+      border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: #000;
+      text-decoration: none;
+    }
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-btn {
+      font-size: 22px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #111;
+    }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 35px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      width: 160px;
+      z-index: 150;
+      animation: fadeIn 0.2s ease;
+    }
+    .dropdown.active .dropdown-menu {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dropdown-menu a {
+      display: block;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: #111;
+      font-size: 14px;
+      border-bottom: 1px solid #f3f3f3;
+      transition: 0.2s;
+    }
+    .dropdown-menu a:hover {
+      background: #f0f0f0;
+      color: #007bff;
+    }
+    main {
+      padding: 25px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 15px;
+      color: #111;
+    }
+    p {
+      line-height: 1.6;
+      text-align: justify;
+      margin-bottom: 25px;
+    }
+    .contact-card {
+      display: flex;
+      align-items: center;
+      background-color: #fafafa;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .contact-card:hover {
+      background-color: #f0f0f0;
+      transform: translateY(-2px);
+    }
+    .contact-card img {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      margin-right: 15px;
+    }
+    .contact-info h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #222;
+    }
+    .contact-info p {
+      margin: 4px 0 0;
+      font-size: 14px;
+      color: #666;
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+      color: #888;
+      border-top: 1px solid #eee;
+      margin-top: 40px;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+</body>
+</html>
+
+  <header>
+    <a class="logo" href="index.html">DATA HORIZON</a>
+    <div class="dropdown" id="dropdown">
+      <button class="dropdown-btn"><i class="fas fa-bars"></i></button>
+      <div class="dropdown-menu">
+        <a href="index.html">
+          <img src="https://i.pinimg.com/564x/1f/8f/b3/1f8fb300f7f5e4e42f60f09f366fa27e.jpg" alt="Home" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;border-radius:4px;"> Home
+        </a>
+        <a href="aplikasimod.html">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjmMQ9mz2OJGTJTAxY_eiBeBjAClPFwEcl8-t9FKZRPrreq_a-idznk_GSx00eajiIRiwyNl6MWZzltAfCA_iuaJeDSTZXd9xUvL0MdiUy2YeEK7nWJUeVMf99Wjt-YCDW5xKewD-i0rk9XdYtvWwb3ZI1YuXkC3odSvtIgd2BHhZUVfSNLDDw1ArhsJKk/s320/Proyek%20Baru%207%20%5BF61696C%5D.png" alt="Aplikasi MOD" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;border-radius:4px;"> Aplikasi MOD
+        </a>
+        <a href="https://youtube.com/@informatifdata?si=pI8d62-yDwhjGslX">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjadMgLyjRQ2El4Kg-liRKnsx064T1OYLNAHCR-QMBEhNDGNGIeEgvE51hyphenhyphenzq9NT41ySE4EYNrJr0Fyzqv6HZEEMNGcfNHDCf7wchM2UTJswOAFv6Qdliwf9_2l7x2uY8W82jBEA1kYTLYj1ZRIng9VDXOp8dxGibsgNsh7zjhCQGTAfNCYRCpSWqf1Xiw/s320/Proyek%20Baru%207%20%5B798EA53%5D.png" alt="YouTube" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;border-radius:4px;"> YouTube
+        </a>
+        <a href="about.html">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEji8m2pBCZVQuXa-B7jwg5GniQZm9hjh_1FO42oaxFznt5VhOwp0h8hhHlW-6EaZOR5QZh4ndTQ_IRfVRei4UP5OmerGXZIwsjCKxZYGlZSETbBcAEccG4qm4lFuVATiMSwSQT-CFMmqR9SKaOZxxv5ATIXOqIESTiuhi_PaNluXfbGxGfNnI1sii1O8QM/s320/Proyek%20Baru%207%20%5BCFD164F%5D.png" alt="About" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;border-radius:4px;"> About
+        </a>
+        <a href="contact.html">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgtEwic5krxY7j_iBNiSYFxtW_0GSCaU8kmvs5y6VfhC8KTMIap-d91bjIlnrUNlzLZ7DZXCKSdQST9CXpJreWAaY2yhZhbx9IrRxyYPwraPK1_A24BQqVxi1X2N5_lTV6g_pXD9iXMO1j561MYFQMq-DIVmb9yn8tBkxqepO5ogqUH3Oy6pWS66wkT-5E/s320/Proyek%20Baru%207%20%5BC61ABFF%5D.png" alt="Kontak" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;border-radius:4px;"> Kontak
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <h1>🔸 Hubungi Kami 🔸</h1>
+    <p>Selamat datang di halaman <b>Kontak DATA HORIZON</b>, tempat di mana kamu bisa langsung terhubung dengan saya. 
+    Kirim pesan, pertanyaan, atau ajakan kerja sama melalui platform yang tersedia di bawah ini. Saya akan berusaha merespons setiap pesan secepat mungkin.</p>
+
+    <a href="https://wa.me/qr/XCO3JLFVZYEAN1" class="contact-card">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXsLiq7YenAuKF5Vm9d2R9RywU4qSUqTLY9P2ugjswGw&s=10" alt="WhatsApp">
+      <div class="contact-info">
+        <h3>WhatsApp</h3>
+        <p>+6285137756114</p>
+      </div>
+    </a>
+
+    <a href="https://www.instagram.com/madeeegenn?igsh=MTExd3NkZ3VodXpuMg==" class="contact-card">
+      <img src="https://img.freepik.com/psd-premium/logo-aplikasi-instagram_23-2151544088.jpg" alt="Instagram">
+      <div class="contact-info">
+        <h3>Instagram</h3>
+        <p>@madeeegenn</p>
+      </div>
+    </a>
+
+    <a href="mailto:danzycoze@gmail.com" class="contact-card">
+      <img src="https://static.republika.co.id/uploads/images/inpicture_slide/logo-baru_201007084651-572.png" alt="Email">
+      <div class="contact-info">
+        <h3>Email</h3>
+        <p>danzycoze@gmail.com</p>
+      </div>
+    </a>
+
+    <a href="https://saweria.co/DataHorizon" class="contact-card">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpwgmeLpt14IAcXSSlGsVp6Hnxs9LQJvSiAA&s" alt="Saweria">
+      <div class="contact-info">
+        <h3>Saweria</h3>
+        <p>DataHorizon Donate</p>
+      </div>
+    </a>
+
+    <a href="https://t.me/DataHorizonSupport" class="contact-card">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRb_8OEJEEB63JpdQkUc7OTi1zcGM2IihXP1avnGkvrnQ&s=10" alt="Telegram">
+      <div class="contact-info">
+        <h3>Telegram</h3>
+        <p>@DataHorizonSupport</p>
+      </div>
+    </a>
+
+    <p style="margin-top:30px; text-align:center; color:#555;">Terima kasih sudah mendukung <b>DATA HORIZON</b>.<br>Hubungi saya kapan saja untuk saran, kerja sama, atau pertanyaan lainnya!</p>
+  </main>
+
+  <footer>© 2025 DATA HORIZON - All Rights Reserved</footer>
+
+  <script>
+    // Dropdown menu toggle
+    const dropdown = document.getElementById("dropdown");
+    dropdown.addEventListener("click", (e) => {
+      dropdown.classList.toggle("active");
+      e.stopPropagation();
+    });
+    document.body.addEventListener("click", () => dropdown.classList.remove("active"));
+  </script>
+
+</body>
+</html>
