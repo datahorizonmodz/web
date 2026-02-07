@@ -1,1364 +1,876 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Panel v3 - DATZON</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DATA HORIZON</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
+  <!-- Tambahan: import font Work Sans -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+  
+/* ✨ Efek Lembut Elegan (Tanpa Dark Mode) ✨ */
+html {
+  scroll-behavior: smooth;
+}
+.app-card, .app-item {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.app-card:hover, .app-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
 
-    <style>
-      /* ============================================
-      CSS (Tema Gelap + CSS untuk CRUD)
-      ============================================
-    */
-      :root {
-        --bg-color: #1a1a1a;
-        --form-bg: #2a2a2a;
-        --text-color: #f0f0f0;
-        --label-color: #aaa;
-        --primary-color: #007bff;
-        --border-color: #444;
-        --success-color: #28a745;
-        --error-color: #dc3545;
-        --warning-color: #ffc107;
-        --secondary-bg: #333;
-      }
+/* Fade-in animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+/* Tombol efek glow */
+.download-btn, .view-all-btn {
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+.download-btn:hover, .view-all-btn:hover {
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
+  transform: translateY(-3px);
+}
 
-      body {
-        font-family: "Work Sans", sans-serif;
-        background: var(--bg-color);
-        color: var(--text-color);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        padding: 20px;
-      }
+/* Header shadow saat scroll */
+header.scrolled {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+}
 
-      /* === Navigasi Tab === */
-      .tab-navigation {
-        display: flex;
-        margin-bottom: -1px;
-        z-index: 10;
-      }
-      .tab-btn {
-        padding: 12px 20px;
-        border: 1px solid var(--border-color);
-        background: var(--secondary-bg);
-        color: var(--label-color);
-        cursor: pointer;
-        font-size: 15px;
-        font-weight: 600;
-        border-bottom: none;
-        border-radius: 8px 8px 0 0;
-        transition: background 0.2s, color 0.2s;
-      }
-      .tab-btn:hover {
-        background: #444;
-      }
-      .tab-btn.active {
-        background: var(--form-bg);
-        color: var(--text-color);
-        border-bottom: 1px solid var(--form-bg);
-      }
 
-      /* === Kontainer Admin === */
-      .admin-container {
-        width: 100%;
-        max-width: 800px; /* Lebih lebar untuk CRUD list */
-        background: var(--form-bg);
-        border-radius: 12px;
-        border-top-left-radius: 0;
-        padding: 30px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      }
+/* 🌐 FOLLOW US SECTION */
+.follow-us {
+  background-color: #fff;
+  text-align: center;
+  padding: 40px 20px;
+  border-top: 1px solid #eee;
+}
+.follow-logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+}
+.follow-us h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+.social-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+.social-icons img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.social-icons img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
 
-      .tab-content {
-        display: none;
-      }
-      .tab-content.active {
-        display: block;
-        animation: fadeIn 0.5s ease;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
 
-      h1,
-      h2 {
-        text-align: left;
-        margin-bottom: 25px;
-        font-weight: 700;
-        padding-bottom: 15px;
-        border-bottom: 1px solid var(--border-color);
-      }
-      h2 {
-        font-size: 20px;
-        margin-top: 30px;
-      }
+#store-popup.fadeout {
+  opacity: 0;
+  transform: translate(-50%, 70%) scale(0.95);
+  transition: all 0.35s ease;
+}
 
-      .form-group {
-        margin-bottom: 20px;
-      }
-      .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--label-color);
-      }
+</style>
 
-      /* Input universal */
-      input[type="text"],
-      input[type="number"],
-      input[type="file"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 12px 15px;
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        background: var(--secondary-bg);
-        color: var(--text-color);
-        font-size: 15px;
-        transition: border-color 0.2s, box-shadow 0.2s;
-        font-family: "Work Sans", sans-serif;
-      }
-      input[readonly] {
-        background: #444;
-      }
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: "Work Sans", sans-serif; 
+    }
+    body { 
+      background: #ffffff; 
+      color: #111; 
+      overflow-x: hidden; 
+    }
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      background: #fff; 
+      padding: 12px 20px; 
+      border-bottom: 1px solid #e0e0e0; 
+      position: sticky; 
+      top: 0; 
+      z-index: 100; 
+    }
+    .logo { 
+      font-size: 20px; 
+      font-weight: 700; 
+      color: #000; 
+      text-decoration: none; 
+    }
+    .dropdown { position: relative; }
+    .dropdown-btn { 
+      font-size: 22px; 
+      border: none; 
+      background: none; 
+      cursor: pointer; 
+      color: #111; 
+    }
+    .dropdown-menu { 
+      display: none; 
+      position: absolute; 
+      right: 0; 
+      top: 35px; 
+      background: #fff; 
+      border: 1px solid #eee; 
+      border-radius: 8px; 
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1); 
+      width: 160px; 
+      z-index: 150; 
+      animation: fadeIn 0.2s ease; 
+    }
+    @keyframes fadeIn { 
+      from {opacity: 0; transform: translateY(-5px);} 
+      to {opacity: 1; transform: translateY(0);} 
+    }
+    .dropdown-menu a { 
+      display: block; 
+      padding: 10px 15px; 
+      text-decoration: none; 
+      color: #111; 
+      font-size: 14px; 
+      border-bottom: 1px solid #f3f3f3; 
+      transition: 0.2s; 
+    }
+    .dropdown-menu a:hover { 
+      background: #f0f0f0; 
+      color: #007bff; 
+    }
+    .dropdown.active .dropdown-menu { display: block; }
 
-      textarea {
-        min-height: 100px;
-        resize: vertical;
-      }
+    .section-title { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      background: #fff; 
+      border: 1px solid #eee; 
+      border-left: 5px solid #ff3333; 
+      padding: 10px 15px; 
+      margin: 15px; 
+      border-radius: 8px; 
+      font-weight: 600; 
+    }
+    .section-title.blue { border-left: 5px solid #00aaff; }
+    .section-title button { 
+      background: #007bff; 
+      border: none; 
+      color: #fff; 
+      padding: 6px 10px; 
+      border-radius: 6px; 
+      font-size: 13px; 
+      cursor: pointer; 
+    }
+    .app-grid { 
+      display: flex; 
+      overflow-x: auto; 
+      gap: 15px; 
+      padding: 0 15px 15px; 
+    }
+    .app-card { 
+      background: #fff; 
+      border: 1px solid #eee; 
+      border-radius: 10px; 
+      width: 150px; 
+      text-align: center; 
+      flex-shrink: 0; 
+      padding: 10px; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+    }
+    .app-card img { 
+      width: 100%; 
+      aspect-ratio: 1/1; 
+      object-fit: cover; 
+      border-radius: 10px; 
+      margin-bottom: 5px; 
+    }
+    .app-card h4 { font-size: 14px; margin: 5px 0; }
+    .app-card small { font-size: 12px; color: gray; }
+    .download-btn { 
+      display: inline-block; 
+      background: #007bff; 
+      color: #fff; 
+      border: none; 
+      padding: 6px 12px; 
+      border-radius: 5px; 
+      font-size: 13px; 
+      cursor: pointer; 
+      margin-top: 5px; 
+      text-decoration: none; 
+      transition: 0.2s; 
+    }
+    .download-btn:hover { background: #0056cc; }
+    .app-list { 
+      margin: 0 15px 20px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px; 
+    }
+    .app-item { 
+      display: flex; 
+      align-items: center; 
+      background: #fff; 
+      border: 1px solid #eee; 
+      border-radius: 10px; 
+      padding: 10px; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+    }
+    .app-item img { 
+      width: 60px; 
+      height: 60px; 
+      border-radius: 10px; 
+      object-fit: cover; 
+      margin-right: 10px; 
+    }
+    .app-info { flex: 1; }
+    .app-info h4 { font-size: 15px; margin: 0; }
+    .app-info small { color: gray; font-size: 12px; }
+footer { 
+  text-align: center; 
+  padding: 15px; 
+  font-size: 13px; 
+  color: #888;
+}
 
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
-      }
+/* Tombol VIEW ALL versi link */
+.view-all-btn {
+  background: #007bff;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-block;
+  transition: 0.2s;
+}
 
-      .checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .checkbox-group input {
-        width: 18px;
-        height: 18px;
-      }
+.view-all-btn:hover {
+  background: #0056cc;
+}
+  
+#store-popup.fadeout {
+  opacity: 0;
+  transform: translate(-50%, 70%) scale(0.95);
+  transition: all 0.35s ease;
+}
 
-      /* === Styling Form Dinamis (Price, FAQ) === */
-      .dynamic-list-container {
-        padding: 15px;
-        background: var(--bg-color);
-        border-radius: 8px;
-        margin-top: 10px;
-      }
-      .dynamic-item {
-        padding: 15px;
-        background: var(--secondary-bg);
-        border-radius: 6px;
-        margin-bottom: 10px;
-        border-left: 3px solid var(--primary-color);
-        position: relative;
-      }
-      .dynamic-item-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-      .dynamic-item .col-full {
-        grid-column: 1 / -1;
-      }
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-      .remove-item-btn {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background: var(--error-color);
-        color: white;
-        border: none;
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-weight: bold;
-        z-index: 2;
-      }
-      .add-item-btn {
-        width: 100%;
-        padding: 10px;
-        border: none;
-        border-radius: 6px;
-        background: var(--primary-color);
-        color: white;
-        font-weight: 600;
-        cursor: pointer;
-        opacity: 0.8;
-        transition: opacity 0.2s;
-      }
-      .add-item-btn:hover {
-        opacity: 1;
-      }
-      .row-buttons {
-        display: flex;
-        gap: 10px;
-      }
-
-      /* Tombol Submit */
-      .submit-btn {
-        width: 100%;
-        padding: 15px;
-        border: none;
-        border-radius: 8px;
-        background: var(--success-color);
-        color: white;
-        font-size: 16px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.2s, transform 0.1s;
-        margin-top: 10px;
-      }
-      .submit-btn:hover {
-        background: #218838;
-      }
-      .submit-btn:disabled {
-        background: #555;
-        cursor: not-allowed;
-      }
-
-      /* === BARU: CSS untuk Kelola Data (Read/Update/Delete) === */
-      #data-display-container {
-        margin-top: 20px;
-        max-height: 500px;
-        overflow-y: auto;
-        background: var(--bg-color);
-        padding: 10px;
-        border-radius: 8px;
-      }
-      .data-item-card {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: var(--secondary-bg);
-        padding: 12px 15px;
-        border-radius: 8px;
-        margin-bottom: 10px;
-      }
-      .data-item-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-      }
-      .data-item-info img {
-        width: 40px;
-        height: 40px;
-        border-radius: 6px;
-        object-fit: cover;
-      }
-      .data-item-info strong {
-        font-size: 16px;
-      }
-      .data-item-info span {
-        font-size: 12px;
-        color: var(--label-color);
-      }
-      .data-item-actions button {
-        border: none;
-        border-radius: 6px;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-weight: 600;
-        margin-left: 10px;
-        transition: all 0.2s;
-      }
-      .edit-btn {
-        background: var(--warning-color);
-        color: #111;
-      }
-      .delete-btn {
-        background: var(--error-color);
-        color: white;
-      }
-      .edit-btn:hover {
-        background: #e0a800;
-      }
-      .delete-btn:hover {
-        background: #c82333;
-      }
-
-      /* === BARU: CSS untuk Modal (Edit & Delete) === */
-      .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(5px);
-        z-index: 1000;
-        display: none;
-        align-items: center;
-        justify-content: center;
-      }
-      .modal-overlay.show {
-        display: flex;
-      }
-
-      .modal-box {
-        background: var(--form-bg);
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-        z-index: 1001;
-      }
-
-      /* Modal Hapus */
-      #delete-modal {
-        width: 90%;
-        max-width: 400px;
-        text-align: center;
-      }
-      #delete-modal h3 {
-        font-size: 20px;
-        margin-bottom: 10px;
-      }
-      #delete-modal p {
-        margin-bottom: 25px;
-        color: var(--label-color);
-      }
-      #delete-modal p strong {
-        color: var(--text-color);
-      }
-      #delete-confirm-btn {
-        background: var(--error-color);
-      }
-
-      /* Modal Edit */
-      #edit-modal {
-        width: 90%;
-        max-width: 700px;
-        max-height: 90vh;
-        overflow-y: auto;
-      }
-      #edit-modal h1 {
-        font-size: 24px;
-      }
-      #edit-modal-content {
-        /* Form di dalam modal akan ditempatkan di sini */
-      }
-
-      /* Status & Loader */
-      .loader {
-        width: 24px;
-        height: 24px;
-        border: 3px solid #fff;
-        border-bottom-color: transparent;
-        border-radius: 50%;
-        display: inline-block;
-        animation: rotation 1s linear infinite;
-        margin-left: 10px;
-      }
-      @keyframes rotation {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-      .status-message {
-        text-align: center;
-        margin-top: 15px;
-        font-size: 15px;
-        font-weight: 500;
-      }
-      .status-message.success {
-        color: var(--success-color);
-      }
-      .status-message.error {
-        color: var(--error-color);
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Navigasi Tab -->
-    <div class="tab-navigation">
-      <button class="tab-btn active" data-tab="create-mod">
-        <i class="fas fa-plus-circle"></i> Upload MOD
-      </button>
-      <button class="tab-btn" data-tab="create-store">
-        <i class="fas fa-cart-plus"></i> Upload Toko
-      </button>
-      <button class="tab-btn" data-tab="manage-data">
-        <i class="fas fa-tasks"></i> Kelola Data
-      </button>
+<!-- Custom override: perbesar tombol store -->
+<style>
+  /* Target only the store button so other floating buttons remain unchanged */
+  #store-btn {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 25px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  /* Slightly increase gap to avoid overlap */
+  .floating-nav { gap: 14px !important; }
+  /* Ensure icon is vertically centered */
+  #store-btn i { line-height: 1; }
+#store-btn {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35) !important;
+}
+</style>
+<script type='text/javascript' src='//pl27971081.effectivegatecpm.com/75/4d/89/754d89bb0699b528a6f6b846376e68cb.js'></script>
+</head>
+<body>
+  <header>
+    <a class="logo" href="https://youtube.com/@informatifdata?si=Lsezixp34bNApb2o" target="_blank">DATA HORIZON</a>
+    <div class="dropdown" id="dropdown">
+      <button class="dropdown-btn"><i class="fas fa-bars"></i></button>
+      <div class="dropdown-menu">
+  <a href="index.html">
+          <img src="https://i.pinimg.com/564x/1f/8f/b3/1f8fb300f7f5e4e42f60f09f366fa27e.jpg" alt="Home" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;border-radius:4px;"> Home
+        </a>
+        <a href="aplikasimod.html">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjmMQ9mz2OJGTJTAxY_eiBeBjAClPFwEcl8-t9FKZRPrreq_a-idznk_GSx00eajiIRiwyNl6MWZzltAfCA_iuaJeDSTZXd9xUvL0MdiUy2YeEK7nWJUeVMf99Wjt-YCDW5xKewD-i0rk9XdYtvWwb3ZI1YuXkC3odSvtIgd2BHhZUVfSNLDDw1ArhsJKk/s320/Proyek%20Baru%207%20%5BF61696C%5D.png" alt="Aplikasi MOD" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;border-radius:4px;"> Aplikasi MOD
+        </a>
+        <a href="https://youtube.com/@informatifdata?si=pI8d62-yDwhjGslX">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjadMgLyjRQ2El4Kg-liRKnsx064T1OYLNAHCR-QMBEhNDGNGIeEgvE51hyphenhyphenzq9NT41ySE4EYNrJr0Fyzqv6HZEEMNGcfNHDCf7wchM2UTJswOAFv6Qdliwf9_2l7x2uY8W82jBEA1kYTLYj1ZRIng9VDXOp8dxGibsgNsh7zjhCQGTAfNCYRCpSWqf1Xiw/s320/Proyek%20Baru%207%20%5B798EA53%5D.png" alt="YouTube" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;border-radius:4px;"> YouTube
+        </a>
+        <a href="about.html">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEji8m2pBCZVQuXa-B7jwg5GniQZm9hjh_1FO42oaxFznt5VhOwp0h8hhHlW-6EaZOR5QZh4ndTQ_IRfVRei4UP5OmerGXZIwsjCKxZYGlZSETbBcAEccG4qm4lFuVATiMSwSQT-CFMmqR9SKaOZxxv5ATIXOqIESTiuhi_PaNluXfbGxGfNnI1sii1O8QM/s320/Proyek%20Baru%207%20%5BCFD164F%5D.png" alt="About" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;border-radius:4px;"> About
+        </a>
+        <a href="contact.html">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgtEwic5krxY7j_iBNiSYFxtW_0GSCaU8kmvs5y6VfhC8KTMIap-d91bjIlnrUNlzLZ7DZXCKSdQST9CXpJreWAaY2yhZhbx9IrRxyYPwraPK1_A24BQqVxi1X2N5_lTV6g_pXD9iXMO1j561MYFQMq-DIVmb9yn8tBkxqepO5ogqUH3Oy6pWS66wkT-5E/s320/Proyek%20Baru%207%20%5BC61ABFF%5D.png" alt="Kontak" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;border-radius:4px;"> Kontak
+        </a>
+</div>
     </div>
+  </header>
 
-    <div class="admin-container">
-      <!-- 
-      ============================================
-      TAB 1: FORM APLIKASI MOD (CREATE)
-      ============================================
-    -->
-      <div id="create-mod-form-container" class="tab-content active">
-        <h1>
-          <i class="fas fa-mobile-alt"></i> Upload Aplikasi MOD (index.html)
-        </h1>
-        <form id="mod-app-form">
-          <!-- Form MOD App (Sama seperti sebelumnya) -->
-          <div class="form-group">
-            <label for="mod-name">Nama Aplikasi</label>
-            <input
-              type="text"
-              id="mod-name"
-              placeholder="Misal: Alight Motion MOD"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="mod-date">Tanggal Update</label>
-            <input
-              type="text"
-              id="mod-date"
-              placeholder="Format: Oct-11-2025"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="mod-downloadLink">Link Download</label>
-            <input
-              type="text"
-              id="mod-downloadLink"
-              placeholder="https://sfl.gl/..."
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="mod-category">Kategori</label>
-            <select id="mod-category" required>
-              <option value="" disabled selected>-- Pilih Kategori --</option>
-              <option value="Editing">Editing</option>
-              <option value="Enhancer">Enhancer</option>
-              <option value="Musik">Musik</option>
-              <option value="Film">Film</option>
-              <option value="Anime">Anime</option>
-              <option value="Drama">Drama</option>
-              <option value="Lainnya">Lainnya</option>
-            </select>
-          </div>
-          <div class="form-group checkbox-group">
-            <input type="checkbox" id="mod-isPopular" />
-            <label for="mod-isPopular">Jadikan Aplikasi Populer?</label>
-          </div>
-          <div class="form-group">
-            <label for="mod-imageFile">Upload Gambar Aplikasi (PNG/JPG)</label>
-            <input
-              type="file"
-              id="mod-imageFile"
-              accept="image/png, image/jpeg"
-            />
-            <small style="color: var(--label-color)"
-              >Kosongkan jika tidak ingin mengubah gambar.</small
-            >
-          </div>
-          <div
-            style="display: flex; align-items: center; justify-content: center"
-          >
-            <button type="submit" id="mod-submit-btn" class="submit-btn">
-              Simpan ke Database MOD
-            </button>
-            <div id="mod-loader" style="display: none" class="loader"></div>
-          </div>
-          <div id="status-message-mod" class="status-message"></div>
-        </form>
-      </div>
+<!-- 🔍 SEARCH BAR -->
+<div style="padding:14px 16px;background:#fff;border-bottom:1px solid #eee;display:flex;justify-content:center;">
+  <div style="max-width:1000px;width:100%;display:flex;align-items:center;gap:10px;">
+    <button id="search-icon" style="width:46px;height:46px;border-radius:10px;border:1px solid #ddd;background:#fff;display:flex;align-items:center;justify-content:center;cursor:default;">
+      <i class='fas fa-search' style='font-size:18px;color:#111;'></i>
+    </button>
+    <input id="searchInput" type="text" placeholder="Search Aplikasi..." style="flex:1;padding:13px 14px;border-radius:10px;border:1px solid #ddd;font-size:15px;outline:none;">
+    <button id="searchBtn" title="Cari" style="width:46px;height:46px;border:none;background:#007bff;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='24px' height='24px'>
+        <path d='M3 22v-8l10-2-10-2V2l18 10L3 22z'/>
+      </svg>
+    </button>
+    <button id="clearSearch" title="Bersihkan" style="padding:10px 14px;border-radius:10px;border:1px solid #ddd;background:#fff;cursor:pointer;font-size:14px;">Clear</button>
+  </div>
+</div>
 
-      <!-- 
-      ============================================
-      TAB 2: FORM PRODUK TOKO (CREATE)
-      ============================================
-    -->
-      <div id="create-store-form-container" class="tab-content">
-        <h1><i class="fas fa-store"></i> Upload Produk Toko (store.html)</h1>
-        <form id="store-product-form">
-          <!-- Form Store (Sama seperti sebelumnya, tapi kita akan buat reusable) -->
-          <!-- Saya akan pindahkan HTML form ini ke dalam template agar bisa dipakai modal Edit -->
-          <div id="store-form-content">
-            <!-- Konten form akan di-render oleh JS -->
-          </div>
-          <div
-            style="display: flex; align-items: center; justify-content: center"
-          >
-            <button type="submit" id="store-submit-btn" class="submit-btn">
-              Simpan ke Database Store
-            </button>
-            <div id="store-loader" style="display: none" class="loader"></div>
-          </div>
-          <div id="status-message-store" class="status-message"></div>
-        </form>
-      </div>
 
-      <!-- 
-      ============================================
-      TAB 3: KELOLA DATA (READ, UPDATE, DELETE)
-      ============================================
-    -->
-      <div id="manage-data-form-container" class="tab-content">
-        <h1><i class="fas fa-tasks"></i> Kelola Data</h1>
-        <div class="row-buttons">
-          <button id="load-mod-data-btn" class="add-item-btn">
-            <i class="fas fa-mobile-alt"></i> Muat Data Aplikasi MOD
-          </button>
-          <button id="load-store-data-btn" class="add-item-btn">
-            <i class="fas fa-store"></i> Muat Data Produk Toko
-          </button>
-        </div>
-
-        <div
-          id="data-display-loader"
-          style="display: none; margin: 20px auto"
-          class="loader"
-        ></div>
-
-        <div id="data-display-container">
-          <!-- Data list akan di-render oleh JS di sini -->
-        </div>
-      </div>
+  <section>
+    <div class="section-title">
+      <span>📱 Aplikasi MOD Populer</span>
+      <a href="aplikasimod.html" class="view-all-btn">VIEW ALL</a>
     </div>
-    <!-- end .admin-container -->
+    
+  <div class="category-filter">
+    <button class="cat-btn active" data-cat="Semua">Semua</button>
+    <button class="cat-btn" data-cat="Editing">Editing</button>
+    <button class="cat-btn" data-cat="Enhancer">Enhancer</button>
+    <button class="cat-btn" data-cat="Musik">Musik</button>
+    <button class="cat-btn" data-cat="Film">Film</button>
+    <button class="cat-btn" data-cat="Anime">Anime</button>
+    <button class="cat-btn" data-cat="Drama">Drama</button>
+    <button class="cat-btn" data-cat="Lainnya">Lainnya</button>
+  </div>
+  <style>
+  .category-filter { display:flex; gap:8px; padding:0 15px 12px; flex-wrap:wrap; }
+  .cat-btn { background: #fff; border:1px solid #e6eef9; padding:6px 10px; border-radius:8px; cursor:pointer; color:#007bff; font-weight:600; transition:transform .15s, box-shadow .15s; }
+  .cat-btn.active, .cat-btn:hover { background:#007bff; color:#fff; transform:translateY(-2px); box-shadow:0 6px 12px rgba(0,123,255,0.12); }
+  
+#store-popup.fadeout {
+  opacity: 0;
+  transform: translate(-50%, 70%) scale(0.95);
+  transition: all 0.35s ease;
+}
 
-    <!-- 
-    ============================================
-    HTML TEMPLATE (UNTUK FORM & MODAL)
-    ============================================
-  -->
+</style>
 
-    <!-- Template untuk Form Store (dipakai di Tab 2 dan Modal Edit) -->
-    <template id="store-form-template">
-      <div class="form-group">
-        <label for="store-productID"
-          >Product ID (WAJIB SAMA DENGAN di store.html)</label
-        >
-        <input
-          type="text"
-          class="store-productID"
-          placeholder="misal: alight-motion (huruf kecil, tanpa spasi)"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="store-name">Nama Produk</label>
-        <input
-          type="text"
-          class="store-name"
-          placeholder="Misal: Alight Motion Premium"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="store-imageFile">Upload Gambar Produk (PNG/JPG)</label>
-        <input
-          type="file"
-          class="store-imageFile"
-          accept="image/png, image/jpeg"
-        />
-        <small style="color: var(--label-color)"
-          >Kosongkan jika tidak ingin mengubah gambar.</small
-        >
-        <img
-          src=""
-          class="image-preview"
-          style="
-            width: 50px;
-            height: 50px;
-            display: none;
-            margin-top: 10px;
-            border-radius: 6px;
-          "
-        />
-      </div>
-      <div class="form-group">
-        <label for="store-description"
-          >Deskripsi (Gunakan 'Enter' untuk baris baru)</label
-        >
-        <textarea
-          class="store-description"
-          placeholder="1. Fitur A...&#10;2. Fitur B..."
-        ></textarea>
-      </div>
-      <div class="form-group">
-        <label for="store-notes">Catatan Penting</label>
-        <textarea
-          class="store-notes"
-          placeholder="Misal: Hanya untuk Android."
-        ></textarea>
-      </div>
-      <div class="form-group">
-        <label>Pilihan Harga (Price Bundles)</label>
-        <div class="price-bundles-container dynamic-list-container">
-          <!-- Pilihan harga akan ditambah oleh JS di sini -->
-        </div>
-        <button
-          type="button"
-          class="add-price-bundle add-item-btn"
-          style="margin-top: 10px"
-        >
-          <i class="fas fa-plus"></i> Tambah Pilihan Harga
-        </button>
-      </div>
-      <div class="form-group">
-        <label>Pertanyaan (FAQ)</label>
-        <div class="faqs-container dynamic-list-container">
-          <!-- FAQ akan ditambah oleh JS di sini -->
-        </div>
-        <button
-          type="button"
-          class="add-faq add-item-btn"
-          style="margin-top: 10px"
-        >
-          <i class="fas fa-plus"></i> Tambah FAQ
-        </button>
-      </div>
-    </template>
+    <div id="modGrid" class="app-grid"></div>
+  </section>
 
-    <!-- Modal untuk Konfirmasi Delete -->
-    <div id="delete-modal" class="modal-overlay">
-      <div class="modal-box">
-        <h3>Konfirmasi Hapus</h3>
-        <p>
-          Anda yakin ingin menghapus <strong id="delete-item-name"></strong>?
-          Tindakan ini tidak dapat dibatalkan.
-        </p>
-        <div class="row-buttons">
-          <button
-            id="delete-cancel-btn"
-            class="add-item-btn"
-            style="background: var(--secondary-bg)"
-          >
-            Batal
-          </button>
-          <button
-            id="delete-confirm-btn"
-            class="submit-btn"
-            style="margin-top: 0"
-          >
-            Ya, Hapus
-          </button>
-        </div>
-      </div>
+  <section>
+    <div class="section-title blue">
+      <span>💎 Aplikasi MOD Lainnya</span>
+      <a href="aplikasimod.html" class="view-all-btn">VIEW ALL</a>
     </div>
+    <div id="premiumList" class="app-list"></div>
+  </section>
 
-    <!-- Modal untuk Edit Data -->
-    <div id="edit-modal" class="modal-overlay">
-      <div class="modal-box">
-        <button
-          id="edit-close-btn"
-          class="remove-item-btn"
-          style="position: absolute; top: 15px; right: 15px"
-        >
-          ×
-        </button>
-        <h1><i class="fas fa-edit"></i> Edit Data</h1>
-        <div id="edit-modal-content">
-          <!-- Form Edit (MOD atau Store) akan di-render JS di sini -->
-        </div>
-        <div id="edit-status-message" class="status-message"></div>
-      </div>
+  
+
+
+
+<!-- 💬 TESTIMONIALS (2 random shown) -->
+<section class="testimonials fade-in">
+  <div class="testi-container" style="max-width:900px;margin:20px auto;padding:20px;">
+    <h3 style="text-align:center;margin-bottom:12px;font-size:18px;">Kata Mereka</h3>
+    <div id="testimonials-list" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"></div>
+  </div>
+</section>
+<style>
+.testimonials .testi-card { background:#fff;border:1px solid #eee;padding:12px;border-radius:10px;max-width:420px;box-shadow:0 4px 12px rgba(0,0,0,0.04); }
+.testimonials .testi-card p { font-size:14px;color:#333;margin-bottom:8px; }
+.testimonials .testi-card span { font-size:13px;color:#666;font-weight:600; }
+
+#store-popup.fadeout {
+  opacity: 0;
+  transform: translate(-50%, 70%) scale(0.95);
+  transition: all 0.35s ease;
+}
+
+</style>
+
+
+
+<!-- 🌐 FOLLOW US SECTION (Final Added) -->
+<section class="follow-us fade-in">
+  <div class="follow-container">
+    <h3>Follow DataHorizon.com</h3>
+    <div class="social-icons">
+      <a href="https://youtube.com/@informatifdata?si=Lsezixp34bNApb2o" target="_blank">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaYgczYNBtNXEixUwTcAUDLu3zg2HCZC6CV1JiYd0ZlzHkHh3_Yd8dXng&s=10" alt="YouTube">
+      </a>
+      <a href="https://wa.me/qr/XCO3JLFVZYEAN1" target="_blank">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEieTLS3wYoRyqqXdPi-KZgxmp9-QLcpl-KQJjJ4bHS216n2MZoWzfuelWx51JlWvWqYUV92us1skBPuOwsvV9FeDNNP650_x26mNRqN2F3cRddhpGYFXOxMakEJVCIvZTNgihzuwNhg4_Nja62kEoWW0hlkwBfSHn9OEfJ-szYAgW4s7y_VMjFo1pj2OjQ/s320/Proyek%20Baru%208%20%5B8A7CA6B%5D.png" alt="WhatsApp">
+      </a>
+      <a href="https://www.instagram.com/madeeegenn?igsh=MTExd3NkZ3VodXpuMg==" target="_blank">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhd7YZrj1opvC6Wgq03rzWOb3sH3AGyoB1IPnUGn9II8idlf2uFhXoyR_VHiE37IyY7I7OPvwEPFlv_QIQ-at5suKot41LQkMLGe71W8bgUT6PVkudPac6iHwNy6PKoe3d8czzxTzqWY2yYYGteI3p_t_-YAHCncWtegGdYinBXdiDTeEfZaAYB6YNYGUw/s320/Proyek%20Baru%208%20%5B6E51461%5D.png" alt="Instagram">
+      </a>
+      <a href="https://t.me/datzonmodz" target="_blank">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhZoA_AIQg_2vIzrQLuYvmgpN3haAlFhS_o5UiXWLHpn35gUBcZAV6xQMF42PiEB9_05kEqW6N2faJh7jRycRd5nkKFS0grjJ3Fof0ubuRjG6aIoGz_O29lzwzrcziBu1OJEHL_rQbqTAM27iOAqAC14LAzleMo88qbYI4MipEXb3759O1dvfWKkZyogbc/s320/Proyek%20Baru%208%20%5B10D5503%5D.png" alt="Telegram">
+      </a>
+      <a href="https://saweria.co/DataHorizon" target="_blank">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEijz-VoNR33-MPNkjO1Pd4oyOYhnTakyi48wD5h54HNpMxpD0_zqPQQiIu_SF72mxWHzMUPX4TwvMKHuVPoxS_3p3wzvw5gVIecJEIgz_mGw8EcnVB65K-R60TtsXwwncBypsaYcT-qjDJm8u1aQ2cyf96fqi-3RtEPwNEtXjgQ4zI1sdqnvRsKG08E05Q/s320/quality_restoration_20251018214812122.png" alt="Saweria">
+      </a>
     </div>
-
-    <!-- 
-    ======================================================
-    SKRIP INISIALISASI (FIREBASE + CLOUDINARY)
-    ======================================================
-  -->
-    <script src="https://www.gstatic.com/firebasejs/12.5.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore-compat.js"></script>
-    <script>
-      // --- KONFIGURASI BARU ANDA (untuk datahorizon-f2f38) ---
-      // --- 1. Konfigurasi UTAMA (Untuk Hosting) ---
-      const mainConfig = {
-        apiKey: "AIzaSyDJA8GZtlH_MJEBqdap65XZ9Tkhbz0db3E",
-        authDomain: "newdatahorizon.firebaseapp.com",
-        projectId: "newdatahorizon",
-        storageBucket: "newdatahorizon.firebasestorage.app",
-        messagingSenderId: "63465041385",
-        appId: "1:63465041385:web:acd21b60c8d5f19739af78",
-      };
-
-      // --- 2. Konfigurasi KEDUA (Untuk Database) ---
-      const dbConfig = {
-        apiKey: "AIzaSyAQbSmnZlhUahCFzSmwfj9w_YEGm6k-G2Y",
-        authDomain: "datzon-9c715.firebaseapp.com",
-        projectId: "datzon-9c715",
-        storageBucket: "datzon-9c715.firebasestorage.app",
-        messagingSenderId: "691796844747",
-        appId: "1:691796844747:web:598e45005e9cf5a3393b4e",
-      };
-
-      // --- 3. Inisialisasi Kedua Aplikasi ---
-
-      // Inisialisasi aplikasi UTAMA (Default)
-      firebase.initializeApp(mainConfig);
-
-      // Inisialisasi aplikasi KEDUA (Sekunder) dengan nama unik "dbApp"
-      const databaseApp = firebase.initializeApp(dbConfig, "dbApp");
-
-      // --- 4. Cara Menggunakan Database ---
-
-      // PENTING: Ambil Firestore dari aplikasi SEKUNDER
-      const db = databaseApp.firestore();
-
-      // (Opsional) Jika Anda butuh layanan lain dari app utama:
-      // const auth = firebase.auth();
-      // const storage = firebase.storage();
-
-      console.log("Firebase (Main) diinisialisasi.");
-      console.log("Firebase (Database) diinisialisasi di 'datzon-9c715'.");
-
-      // Kode Anda yang lain (fetchData, dll.) akan otomatis menggunakan variabel 'db'
-      // yang sudah terhubung ke 'datzon-9c715'
-    </script>
-
-    <!-- 
-    ======================================================
-    SKRIP LOGIKA UTAMA (Full CRUD)
-    ======================================================
-  -->
-    <script>
-      // ----------------------------------------------------
-      // Info Cloudinary (Anda sudah isi)
-      // ----------------------------------------------------
-      const CLOUDINARY_CLOUD_NAME = "dvhwd2rci";
-      const CLOUDINARY_UPLOAD_PRESET = "datzon-unsigned";
-      // ----------------------------------------------------
-
-      // --- Template HTML ---
-      const storeFormTemplate = document.getElementById(
-        "store-form-template"
-      ).innerHTML;
-
-      // --- Elemen Global ---
-      const deleteModal = document.getElementById("delete-modal");
-      const editModal = document.getElementById("edit-modal");
-
-      document.addEventListener("DOMContentLoaded", () => {
-        // --- 1. LOGIKA NAVIGASI TAB ---
-        const tabButtons = document.querySelectorAll(".tab-btn");
-        const tabContents = document.querySelectorAll(".tab-content");
-        tabButtons.forEach((button) => {
-          button.addEventListener("click", () => {
-            tabButtons.forEach((btn) => btn.classList.remove("active"));
-            tabContents.forEach((content) =>
-              content.classList.remove("active")
-            );
-            button.classList.add("active");
-            const tabId = button.dataset.tab;
-            document
-              .getElementById(`${tabId}-form-container`)
-              .classList.add("active");
-          });
-        });
-
-        // --- 2. LOGIKA TAB 1: CREATE MOD APP ---
-        setupCreateModForm();
-
-        // --- 3. LOGIKA TAB 2: CREATE STORE PRODUCT ---
-        setupCreateStoreForm();
-
-        // --- 4. LOGIKA TAB 3: KELOLA DATA (R/U/D) ---
-        setupManageDataTab();
-      }); // Akhir DOMContentLoaded
-
-      /*
-    ================================================
-    FUNGSI SETUP FORM (CREATE)
-    ================================================
-    */
-
-      function setupCreateModForm() {
-        const modForm = document.getElementById("mod-app-form");
-        const modSubmitBtn = document.getElementById("mod-submit-btn");
-        const modLoader = document.getElementById("mod-loader");
-        const modStatus = document.getElementById("status-message-mod");
-
-        modForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          setLoading(modSubmitBtn, modLoader, true, "Mengupload...");
-          setStatus(modStatus, "", "");
-
-          try {
-            const imageFile = document.getElementById("mod-imageFile").files[0];
-            let imageUrl = null;
-            if (imageFile) {
-              imageUrl = await uploadToCloudinary(imageFile);
-            }
-
-            const appData = {
-              name: document.getElementById("mod-name").value,
-              date: document.getElementById("mod-date").value,
-              downloadLink: document.getElementById("mod-downloadLink").value,
-              category: document.getElementById("mod-category").value,
-              isPopular: document.getElementById("mod-isPopular").checked,
-            };
-
-            if (imageUrl) {
-              appData.imageUrl = imageUrl;
-            }
-
-            await db.collection("modApps").add(appData);
-            setStatus(modStatus, "success", "Aplikasi MOD berhasil disimpan!");
-            modForm.reset();
-          } catch (error) {
-            console.error("Error Simpan MOD:", error);
-            setStatus(modStatus, "error", `Error: ${error.message}`);
-          } finally {
-            setLoading(
-              modSubmitBtn,
-              modLoader,
-              false,
-              "Simpan ke Database MOD"
-            );
-          }
-        });
-      }
-
-      function setupCreateStoreForm() {
-        const formContainer = document.getElementById("store-form-content");
-        formContainer.innerHTML = storeFormTemplate; // Render form dari template
-
-        const storeForm = document.getElementById("store-product-form");
-        const storeSubmitBtn = document.getElementById("store-submit-btn");
-        const storeLoader = document.getElementById("store-loader");
-        const storeStatus = document.getElementById("status-message-store");
-
-        // Tambahkan listener ke tombol dinamis di dalam form
-        addDynamicFormListeners(formContainer);
-
-        storeForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          setLoading(storeSubmitBtn, storeLoader, true, "Mengupload...");
-          setStatus(storeStatus, "", "");
-
-          const formContent = e.target.querySelector("#store-form-content");
-
-          try {
-            // Panggil fungsi reusable untuk mengambil data & save
-            await saveStoreProduct(formContent);
-
-            setStatus(storeStatus, "success", "Produk Toko berhasil disimpan!");
-            storeForm.reset();
-            formContainer.innerHTML = storeFormTemplate; // Reset form ke template awal
-            addDynamicFormListeners(formContainer); // Pasang ulang listener
-          } catch (error) {
-            console.error("Error Simpan Store:", error);
-            setStatus(storeStatus, "error", `Error: ${error.message}`);
-          } finally {
-            setLoading(
-              storeSubmitBtn,
-              storeLoader,
-              false,
-              "Simpan ke Database Store"
-            );
-          }
-        });
-      }
-
-      /*
-    ================================================
-    FUNGSI TAB 3: KELOLA DATA (READ, UPDATE, DELETE)
-    ================================================
-    */
-
-      function setupManageDataTab() {
-        const loadModBtn = document.getElementById("load-mod-data-btn");
-        const loadStoreBtn = document.getElementById("load-store-data-btn");
-        const displayContainer = document.getElementById(
-          "data-display-container"
-        );
-        const displayLoader = document.getElementById("data-display-loader");
-
-        // --- READ ---
-        loadModBtn.addEventListener("click", () => loadData("modApps"));
-        loadStoreBtn.addEventListener("click", () => loadData("storeProducts"));
-
-        async function loadData(collectionName) {
-          displayLoader.style.display = "block";
-          displayContainer.innerHTML = "";
-          try {
-            const snapshot = await db.collection(collectionName).get();
-            if (snapshot.empty) {
-              displayContainer.innerHTML =
-                "<p>Tidak ada data di koleksi ini.</p>";
-              return;
-            }
-
-            snapshot.forEach((doc) => {
-              const data = doc.data();
-              const card = document.createElement("div");
-              card.className = "data-item-card";
-              card.innerHTML = `
-              <div class="data-item-info">
-                <img src="${
-                  data.imageUrl || "https://placehold.co/40x40/555/eee?text=?"
-                }" alt="img">
-                <div>
-                  <strong>${data.name}</strong><br>
-                  <span>ID: ${doc.id}</span>
-                </div>
-              </div>
-              <div class="data-item-actions">
-                <button class="edit-btn" data-id="${
-                  doc.id
-                }" data-collection="${collectionName}">
-                  <i class="fas fa-edit"></i> Edit
-                </button>
-                <button class="delete-btn" data-id="${
-                  doc.id
-                }" data-collection="${collectionName}" data-name="${data.name}">
-                  <i class="fas fa-trash"></i> Delete
-                </button>
-              </div>
-            `;
-              displayContainer.appendChild(card);
-            });
-          } catch (error) {
-            displayContainer.innerHTML = `<p class="status-message error">Error: ${error.message}</p>`;
-          } finally {
-            displayLoader.style.display = "none";
-          }
-        }
-
-        // --- DELETE & UPDATE (Event Delegation) ---
-        displayContainer.addEventListener("click", (e) => {
-          const deleteBtn = e.target.closest(".delete-btn");
-          const editBtn = e.target.closest(".edit-btn");
-
-          if (deleteBtn) {
-            const docId = deleteBtn.dataset.id;
-            const collection = deleteBtn.dataset.collection;
-            const name = deleteBtn.dataset.name;
-            openDeleteModal(collection, docId, name);
-          }
-
-          if (editBtn) {
-            const docId = editBtn.dataset.id;
-            const collection = editBtn.dataset.collection;
-            openEditModal(collection, docId);
-          }
-        });
-
-        // --- DELETE MODAL ---
-        let deleteInfo = {}; // Untuk menyimpan info apa yang akan dihapus
-        const deleteConfirmBtn = document.getElementById("delete-confirm-btn");
-        const deleteCancelBtn = document.getElementById("delete-cancel-btn");
-
-        function openDeleteModal(collection, docId, name) {
-          deleteInfo = { collection, docId };
-          document.getElementById("delete-item-name").textContent = name;
-          deleteModal.classList.add("show");
-        }
-
-        deleteCancelBtn.addEventListener("click", () =>
-          deleteModal.classList.remove("show")
-        );
-        deleteModal.addEventListener("click", (e) => {
-          if (e.target === deleteModal) deleteModal.classList.remove("show");
-        });
-
-        deleteConfirmBtn.addEventListener("click", async () => {
-          const { collection, docId } = deleteInfo;
-          try {
-            // TODO: Hapus sub-koleksi jika 'storeProducts'
-            if (collection === "storeProducts") {
-              // Ini adalah operasi kompleks, untuk saat ini kita hapus dokumen utamanya saja
-              // Menghapus sub-koleksi dari sisi klien itu sulit dan tidak disarankan
-              console.warn(
-                `Menghapus ${docId}, tapi sub-koleksi 'faqs' mungkin akan tertinggal (orphaned).`
-              );
-            }
-
-            await db.collection(collection).doc(docId).delete();
-            deleteModal.classList.remove("show");
-            loadData(collection); // Muat ulang data
-          } catch (error) {
-            console.error("Error Hapus:", error);
-            document
-              .getElementById("delete-modal")
-              .querySelector("p").textContent = `Error: ${error.message}`;
-          }
-        });
-
-        // --- EDIT MODAL ---
-        const editModalContent = document.getElementById("edit-modal-content");
-        const editCloseBtn = document.getElementById("edit-close-btn");
-
-        editCloseBtn.addEventListener("click", () =>
-          editModal.classList.remove("show")
-        );
-        editModal.addEventListener("click", (e) => {
-          if (e.target === editModal) editModal.classList.remove("show");
-        });
-
-        async function openEditModal(collection, docId) {
-          editModal.classList.add("show");
-          editModalContent.innerHTML = `<div class="loader" style="margin: 40px auto;"></div>`;
-          const editStatus = document.getElementById("edit-status-message");
-          setStatus(editStatus, "", "");
-
-          try {
-            if (collection === "storeProducts") {
-              // 1. Ambil data utama & faqs
-              const docRef = db.collection(collection).doc(docId);
-              const doc = await docRef.get();
-              const data = doc.data();
-              const faqsSnapshot = await docRef
-                .collection("faqs")
-                .orderBy("order")
-                .get();
-
-              // 2. Render form dari template
-              editModalContent.innerHTML = storeFormTemplate;
-              addDynamicFormListeners(editModalContent); // Pasang listener
-
-              // 3. Isi form dengan data
-              const idInput =
-                editModalContent.querySelector(".store-productID");
-              idInput.value = docId;
-              idInput.readOnly = true; // Kunci ID, tidak boleh diubah
-
-              editModalContent.querySelector(".store-name").value =
-                data.name || "";
-              editModalContent.querySelector(".store-description").value =
-                data.description || "";
-              editModalContent.querySelector(".store-notes").value =
-                data.notes || "";
-
-              if (data.imageUrl) {
-                const preview =
-                  editModalContent.querySelector(".image-preview");
-                preview.src = data.imageUrl;
-                preview.style.display = "block";
-              }
-
-              // 4. Isi priceBundles dinamis
-              const priceContainer = editModalContent.querySelector(
-                ".price-bundles-container"
-              );
-              data.priceBundles.forEach((bundle) => {
-                const item = createPriceBundleElement(bundle);
-                priceContainer.appendChild(item);
-              });
-
-              // 5. Isi FAQs dinamis
-              const faqContainer =
-                editModalContent.querySelector(".faqs-container");
-              faqsSnapshot.forEach((faqDoc) => {
-                const item = createFaqElement(faqDoc.data());
-                faqContainer.appendChild(item);
-              });
-
-              // 6. Buat tombol Save
-              const saveBtn = document.createElement("button");
-              saveBtn.type = "button";
-              saveBtn.id = "edit-save-btn";
-              saveBtn.className = "submit-btn";
-              saveBtn.textContent = "Simpan Perubahan";
-
-              saveBtn.addEventListener("click", async () => {
-                setLoading(saveBtn, null, true, "Menyimpan...");
-                try {
-                  await saveStoreProduct(editModalContent, docId); // Panggil fungsi save dengan docId
-                  setStatus(editStatus, "success", "Berhasil diperbarui!");
-                  setTimeout(() => {
-                    editModal.classList.remove("show");
-                    loadData(collection); // Muat ulang data di Tab 3
-                  }, 1500);
-                } catch (error) {
-                  setStatus(
-                    editStatus,
-                    "error",
-                    `Error Update: ${error.message}`
-                  );
-                } finally {
-                  setLoading(saveBtn, null, false, "Simpan Perubahan");
-                }
-              });
-              editModalContent.appendChild(saveBtn);
-            } else if (collection === "modApps") {
-              // TODO: Buat logic edit untuk modApps (lebih simpel)
-              editModalContent.innerHTML =
-                "<p>Fitur edit untuk MODs belum dibuat.</p>";
-            }
-          } catch (error) {
-            editModalContent.innerHTML = `<p class="status-message error">Error: ${error.message}</p>`;
-          }
-        }
-      }
-
-      /*
-    ================================================
-    FUNGSI REUSABLE (Bisa dipakai Create & Update)
-    ================================================
-    */
-
-      /**
-       * Menyimpan data Store Product (untuk Create atau Update)
-       * @param {HTMLElement} formRoot - Elemen yang berisi semua field form
-       * @param {string|null} existingDocId - ID dokumen jika ini adalah 'Update'
-       */
-      async function saveStoreProduct(formRoot, existingDocId = null) {
-        const productID =
-          existingDocId ||
-          formRoot.querySelector(".store-productID").value.trim();
-        if (!productID) throw new Error("Product ID tidak boleh kosong!");
-
-        const imageFile = formRoot.querySelector(".store-imageFile").files[0];
-
-        // 1. Upload Gambar (HANYA jika file baru dipilih)
-        let imageUrl = null;
-        if (imageFile) {
-          imageUrl = await uploadToCloudinary(imageFile);
-        }
-
-        // 2. Kumpulkan Price Bundles
-        const priceBundles = [];
-        formRoot.querySelectorAll(".price-bundle-item").forEach((item) => {
-          priceBundles.push({
-            name: item.querySelector(".bundle-name").value,
-            price: Number(item.querySelector(".bundle-price").value),
-            description: item.querySelector(".bundle-desc").value,
-            order: Number(item.querySelector(".bundle-order").value),
-          });
-        });
-
-        // 3. Kumpulkan FAQs
-        const faqs = [];
-        formRoot.querySelectorAll(".faq-item").forEach((item) => {
-          faqs.push({
-            question: item.querySelector(".faq-question").value,
-            order: Number(item.querySelector(".faq-order").value),
-          });
-        });
-
-        // 4. Siapkan data utama
-        const productData = {
-          name: formRoot.querySelector(".store-name").value,
-          description: formRoot.querySelector(".store-description").value,
-          notes: formRoot.querySelector(".store-notes").value,
-          priceBundles: priceBundles,
-        };
-
-        // Tambahkan imageUrl HANYA jika ada gambar baru
-        if (imageUrl) {
-          productData.imageUrl = imageUrl;
-        }
-
-        // 5. Gunakan Batch Write
-        const batch = db.batch();
-        const productRef = db.collection("storeProducts").doc(productID);
-
-        // 'set' dengan {merge: true} atau 'update'.
-        // 'set' lebih aman jika dokumen mungkin belum ada.
-        // Kita pakai 'update' jika 'existingDocId' ada, 'set' jika baru
-        if (existingDocId) {
-          batch.update(productRef, productData); // Hanya update, tidak menimpa
-        } else {
-          batch.set(productRef, productData); // Buat baru
-        }
-
-        // 6. Update/Setel sub-koleksi FAQ
-        // Cara paling aman adalah hapus semua FAQ lama dan buat ulang
-        const faqsCollectionRef = productRef.collection("faqs");
-        const oldFaqsSnapshot = await faqsCollectionRef.get();
-        oldFaqsSnapshot.forEach((doc) => batch.delete(doc.ref));
-
-        // Tambahkan semua FAQ baru
-        faqs.forEach((faq) => {
-          const faqRef = faqsCollectionRef.doc(); // ID acak baru
-          batch.set(faqRef, faq);
-        });
-
-        // 7. Jalankan batch
-        await batch.commit();
-      }
-
-      /**
-       * Memasang listener ke tombol '+' di dalam form dinamis
-       * @param {HTMLElement} formElement - Elemen form (atau modal)
-       */
-      function addDynamicFormListeners(formElement) {
-        formElement
-          .querySelector(".add-price-bundle")
-          .addEventListener("click", () => {
-            const container = formElement.querySelector(
-              ".price-bundles-container"
-            );
-            const item = createPriceBundleElement();
-            container.appendChild(item);
-          });
-
-        formElement.querySelector(".add-faq").addEventListener("click", () => {
-          const container = formElement.querySelector(".faqs-container");
-          const item = createFaqElement();
-          container.appendChild(item);
-        });
-      }
-
-      /**
-       * Membuat elemen HTML untuk 1 item Price Bundle
-       * @param {object|null} data - Data untuk mengisi form (saat edit)
-       */
-      function createPriceBundleElement(data = null) {
-        const item = document.createElement("div");
-        item.className = "dynamic-item price-bundle-item";
-        item.innerHTML = `
-        <button type="button" class="remove-item-btn" onclick="this.parentElement.remove()">×</button>
-        <div class="dynamic-item-grid">
-          <div class="form-group">
-            <label>Nama Bundle</label>
-            <input type="text" class="bundle-name" placeholder="Misal: Private ACC" required value="${
-              data?.name || ""
-            }">
-          </div>
-          <div class="form-group">
-            <label>Harga (Angka)</label>
-            <input type="number" class="bundle-price" placeholder="15000" required value="${
-              data?.price || ""
-            }">
-          </div>
-          <div class="form-group col-full">
-            <label>Deskripsi Bundle</label>
-            <input type="text" class="bundle-desc" placeholder="Misal: / tahun" required value="${
-              data?.description || ""
-            }">
-          </div>
-          <div class="form-group">
-            <label>Order (Angka)</label>
-            <input type="number" class="bundle-order" placeholder="1" required value="${
-              data?.order || ""
-            }">
-          </div>
+  </div>
+</section>
+
+
+
+
+
+<footer class="site-footer" style="padding:18px 12px;background:#fff;border-top:1px solid #eee;">
+  <div style="max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:8px;align-items:center;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+      <a href="#" style="color:#666;text-decoration:none;">Tentang Kami</a> ·
+      <a href="#" style="color:#666;text-decoration:none;">Disclaimer</a> ·
+      <a href="#" style="color:#666;text-decoration:none;">Kebijakan Privasi</a> ·
+      <a href="#" style="color:#666;text-decoration:none;">Hubungi Kami</a>
+    </div>
+    <div id="visitor-stats" style="color:#666;font-size:13px;">👥 Telah dikunjungi: <strong id="visits">12.354</strong> kali</div>
+    <div style="color:#888;font-size:13px;">© 2025 DATA HORIZON - All Rights Reserved</div>
+  </div>
+</footer>
+
+
+  <script>
+    // Dropdown
+    const dropdown = document.getElementById("dropdown");
+    dropdown.addEventListener("click", (e) => {
+      dropdown.classList.toggle("active");
+      e.stopPropagation();
+    });
+    document.body.addEventListener("click", () => dropdown.classList.remove("active"));
+
+    // 🔹 Data Aplikasi
+    window.modApps = [
+      { name: "Alight Motion", date: "Oct-10-2025", img: "data:image/jpeg;base64,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", link: "https://sfl.gl/SdS02Qa" , category: "Editing"},
+      { name: "Wink MOD", date: "Oct-9-2025", img: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALwAAAC8CAMAAAD1lzSZAAAAZlBMVEUAAAD///9DQ0NycnL5+fn8/Pz09PRXV1fh4eHo6Ojx8fHs7Oyvr6/d3d0ODg7k5OSkpKTOzs56enpLS0vFxcVfX1++vr5RUVGIiIiYmJgfHx8YGBhkZGQqKio8PDy1tbUyMjKQkJDn8v12AAAFZUlEQVR4nO2c2ZaiOhRAjcxIgEAIowz//5NXq7qrVBKmJoTcdfaja1nswhDOBJcLAAAAAAAAAADAv5LWqg2247iDaoXtFMg3VDtsJkOItKoltnJFCAWhaouNVA95pO2yf8qjRLXFRr7kzUK1xibqL3lkBTpu9yn6A3ZUq6ynQD+wrFdtsxKGXqBlklbPT8P6fldttoAIvWFjyljHKCXkqlptlsZHIs4v34nUo1y12iy5y1c3Ow2WfMx393W4Zzk3rvtNhyA5JPzzroP7JeCvdx2itLDkL/hYtdgCKsHFSjTYZ/rO5MtrsOCdiK+OsGqzeQqBug4n/utStSyLs9WoVpunYY/QMY7jjhH3/T/oVKutoXKG7jWw1GGPf6VyXjZNDXPB+9/g8paqVtlC/L3rR+fPQHgU9lPe1VP+Upgay1+Gh7yn5Zp/wh6hvLbylwiZ50+7RTg2ylQ7LKBPHsFBbFTvn4YFO3+TpGH4KyS4keK9JxKevVTcB95vGmKRav4bJ+Gex59JiKeH/b0peKUOokE3LSupoKZaqlaboS2Jxzd/gHvVelMkxOYkfD/YkhOQMC3xM2yK85V7Wd0adML7m0CO9B/a31SHrbl/p0Yn7h0cJJ+/bhLR0tpEW3R4gTmSm3Rf3zc4b1H4kXZYUBE79MyHnzVF2s9/aeAX3vlIrKxmo4PNti1Cfu1awK2RJz9uec3WcQX1XwFUnvuFswBm4lZnlbspsVRTcY43czh+s0aEzN7ZlXO86d0ynLqdjpAa2ayXF5evR1iuxIt1k/zSy9XyPhOpE8gv2yc9Wsovqq6XFzT5XjFJkR2RQUlY8+6QHtTxWy9/mdptTO/INusGeWEE7+Pg2KLSBvmUG0+aJEiOzrU3yF+G8Vfc2FBQDNsi/xlVml3TKilwbJF/7Dg/6Z9lUnXF023ylzpwPd+/RVTpzNJG+Ye+YySN4qLvZvkzAPKqAHlVgLwqtJavOfL6dHrHLQ1r5/tm6DRGJudePC4G0F3Tz76kjzAoIp2MxeiMUotd2zCG9zdrtKmEsPmzGkD3zJ7L11MjYdqmf3ugBuE9L9fhPVnH+6/89tWe7JlajIb/4/1Xzv2n0eHHe/6y4aj2b8sYFsqTDkeYFfvu8M1oI5NUNA7rut77N+X0OcnOh5AG9xkpDcYoniTcsqAe8jl//F8L+Z5f0fRUey1C0D+RO0SxE6IOhA7RtiFwZxo8Z5TYfHeZnfy9SERTOBqseENw3pF7/jHFRKCOzNMvmnoQuZ9/0fTiFrN79kHiq3gixD77ohFeqkj2a2L+OWS6C98TIHfB101SxmXR9Nv/RJWIniJ9IvHVSA37TmLt7f2xhk2NKkp8Sqf8TfJNuum66rvpWUV50yvv0au5/g0iYTwzlSuv7DyMF2i2Ivir0qnr9Iklb4y75b2OAw8Lh33yhHG+/v5TStwkBbM/N1Y6c5tnXgSCF5G8nneZPXLxKHZEgqQXfa1qYuoumYWW2t+fFDB9zIbR/pMWAfYnn1Y4yL1dpIBcQtkDSvBEBDDGP36ucjew5GCMN0u8F1T6ZOWaMf51BL1s94UDquuxZM/iPklXDWUvZtfukJB63XMIy7CPer9mu26YfwnkuLdiTCSem7DLI0fP7sOe7ux6cA2+msyDVmC5Kl5FkokeZ12DSVSNWRozqdwSdYV1pSYWP5I7i92J4+dDCNtk4ZOWI/UyPUMJuA9uKy9ey5YfgS3H6fDif8B36eEz/zOEWdmR2evXxiw2etWuXNomKZkocbIwjQsjP9k5f+fepo4xxB3Fvm/btu/7HmFBmWR5q0FfDwAAAAAAAAAAAAAAAAAAAAAAAAAAAPgf8B8Oe0KmsKvEVAAAAABJRU5ErkJggg==", link: "https://sfl.gl/WOZW" , category: "Enhancer"},
+      { name: "Winkit MOD", date: "Oct-8-2025", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYAMlCbsAGyAKHl_oSnInqek5Pibb_KxquXOykIApE_g&s", link: "https://sfl.gl/B8rIpux8" , category: "Enhancer"},
+      { name: "Hypic MOD", date: "Oct-7-2025", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBYczvgJm8IOYJIGDrI5ORt4ez_1Mtneu5xHggVkgVeg&s=10", link: "https://sfl.gl/hbVAsTg" , category: "Editing"},
+      { name: "Ultra Motion", date: "Oct-10-2025", img: "https://ugc.production.linktr.ee/9a2e8721-9348-4654-811a-f11da6c730b0_image.png?io=true&size=thumbnail-stack_v1_0", link: "https://sfl.gl/ICOGL" , category: "Editing"},
+      { name: "CapCut MOD", date: "Oct-6-2025", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNNShQ9ENfYrXNDIN_-WmyAZPGQHPnvOQOOUjfsFTL7A&s=10", link: "https://sfl.gl/tBbK" , category: "Editing"},
+      { name: "KineMaster", date: "Oct-5-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEguNKMjHXPo3hI3PHoUXZx8JxP7u4UV5QJj3V8h4Mjt86FyH2kDQoDL91hdFVK4mKqgAjU-hO9v_1XCnjwoBfg5DRwE8qC76xuTGW9viDv8GzulLW753zzWNed8_NOX1Jqm4fjhERue3nuxi3SUm7RiQ7RcFTfDPm4mOfEcwfV614u_u1-uWoE96NWZ4Vo/s72-c/download%20%2842%29.jpeg", link: "https://sfl.gl/pXreku" , category: "Editing"},
+      { name: "Spotify", date: "Oct-4-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbtcPsiB3e_r7OsPLFbefI0sy39aa8nKV8_jW8uUs0MM9KHb0Wz9rmf2m2YSvRpEJxJyPOmnLrNaxVcxeAYe9VAEam-Dh83nC7ZSlpYFK6oK3_gkuCt0KsGw-Z0xfndNR7CNy0_j-E-HSkjKGAKRW-l-g7htF3SzjFWtSFFl0zdvt5jmpPsqM16OT9Tac/w800/download%20%2820%29.png", link: "https://sfl.gl/vkTWUTab" , category: "Musik"},
+      { name: "Wink China", date: "Oct-3-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjfdkM4niAePrBw1tkZvUmlGyCTU7p_UkUuF4zdYHHAmsob_Rre-QqBjiP6nACu0NJIL-g358RRsRA_RH9pBLdVX2msLZFwITCP8CYDZLun1d1pZUEaR5FNrkbzoTda2a6id8x4fLQSM_Nk_Mg_ubivjUYTxrPYP6HLFloRl49G5ZbdoCJ87Aji-5zRaKQ/w800/Wink%20China_icon.png", link: "https://sfl.gl/ySCzoG" , category: "Enhancer"},
+      { name: "VMake MOD", date: "Oct-2-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiodg9ylPX9I2fhXud72Pot2uGA1J0_f00Iv0_H2MeSsgvN4HRtkMXd1PAujeJvvvQn9cQgHN2MwWkWVnmT6MCOMeM9_a9-hIUHwwfkBTahRG3g7SNDjPtFQ-ieZQRxGvOh9kBegr6Y_pXTaAn6oPlprY6Oq6YeBjLEV38k8CL0wiboN_ER3TxtanXDS04/w800/download%20%2812%29.png", link: "https://sfl.gl/68Nba0W4" , category: "Enhancer"},
+      { name: "LightRoom", date: "Oct-1-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEije5K5QeraPomUP7h-LxJ50aS1jLkDf5snYamKSq5mwsuT4l-FYtolZVy9bsNsKcD7-bd96CRvtM0KQc_tpEw0BddpK8tSlpUqZyJ4W-40szhHcuhfkAoM2qFnvtkQQIOlsoaI4WEb1DAJN5ZMwyVQpS5j1HbsjU6XbWpEYUM29-ehrQMdvCzeZEsuclk/w800/download%20%2811%29.png", link: "https://sfl.gl/ELMHaJ" , category: "Editing"}
+    ];
+
+    // 🔹 Data Premium Apps
+    window.premiumApps = [
+      { name: "Bstation", date: "Sep-30-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjizYVW-SlUVXN-UwKZvFwlILWWqcUgxoErXCJ-yHwqREAwavLtxWT5qav0bGmZCZxsZwlCsj2N87JBbCJZETjvUV5mcCnCB3UUGtaubJhg4Mtl9Y3PIL4p71v5tIT7md-pfDTUDn6pcA-fOLt0eYk9ECBOE8uD-vI20S4pKImxNwEk2KF6dNyDehx3FcQ/s72-c/images%20%2848%29.jpeg", link: "https://sfl.gl/jmjj" , category: "Anime"},
+      { name: "AirBrush Enhancer", date: "Sep-29-2025", img: "https://cdn-1.webcatalog.io/catalog/airbrush-com/airbrush-com-icon-unplated.png?v=1756082090010", link: "https://download-premium2.com" , category: "Enhancer"},
+      { name: "Spring - Video Editor", date: "Sep-28-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhQ_qBNTisgn5vVaBni_qmQc1zdA5EDW6LNKGHHXqOIyc9aEQ3ZMJNOTWQ2NghzQv6SLZ0L9ZdlyoEbyXo90Q9ygRxtZm-6A3ASF9XG3fWULBLItewH51AByI968GiHt3TvxDrZGFbIBPjlt_pKCtGk54TzyDIVEfxbZ6K2d8_uCmeVVJXz6leDntQO8EM/w800/download%20%2832%29.png", link: "https://sfl.gl/AlobzQ0i" , category: "Editing"},
+      { name: "After Motion", date: "Sep-27-2025", img: "https://ugc.production.linktr.ee/5cdff8d0-9601-46d0-a72b-74396a3714a3_image.png?io=true&size=thumbnail-stack_v1_0", link: "https://download-premium4.com" , category: "Editing"},
+      { name: "LokLok", date: "Sep-26-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhkKvlVL7KPxIffKdPjylIUfRWOhOYt_jpq57rfwPRs5ueW9YkdaZqqnb_0OoA2D5duRRaZkS-oiUFYr5MkziDCE9metgtOAgiizk4qauJU36i8h5n3WAQKReY-wcVstxVZdJllD4fgKqaf8ogR7HlZ7Ad1Jt4gMl7FgdZqvuTzpoP7b3ZIug-5WeT2FCo/w800/Loklok23_icon.png", link: "https://download-premium5.com" , category: "Anime"},
+      { name: "NetFlix", date: "Sep-25-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEixfVxziBwFuDP5hTQb8kfVPlhsCm5eUCK0IYDEDm2S3NT0W-uNcGlo57Ga8b2cZwgzvH_JwdmFjRB8HIk5ncQy-xJ-RUtTyq2Wj7LHYSscSygHA_0s8Ogk4Zl6NoOFSJgTTOQjr92EJQoxE8TtvRdHM5R33zZ9bZoaFN8v5ExhAVWsS_84OXyFMyeeb6k/w800/images%20%2824%29.png", link: "https://download-premium6.com" , category: "Film"},
+      { name: "Terabox", date: "Sep-24-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEheGj8s7xiizKULVjtE-duZO4vpcN-szdGxMTcCed4vv1Yx6VnazZYYsFHJfGxqOvrdyw5t3CnKyL7AvaHA7q3jHPauOQg1OkuUegWZE5tVLUpc3Hpss79W8ZE7TL35cw5dUTJn_9qJzPWycFrsLu3cCY2A-6F1I0J_WJdwnwdr6Xl0s1r-3c-rh43Fuko/w800/images%20%282%29.png", link: "https://sfl.gl/7w1wU4" , category: "Lainnya"},
+      { name: "Vidio", date: "Sep-23-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh1MLe8RMziwSUwKT6ZR2STw1uaW6hDLtjfRSxpmXDLEXM9Czt6K_jKyHerVuBgEtZo733TDWlD3C4pOXh4V0oszyhcDknqo5t4pQdCaT-JjuL9A72JRimF7_4f1FTWl1MAhInDtxI7i0Q7OHGvaWdxPqF3wl9SXzXfF06r2AjZLwy2EAgeWT2VHTUzSX8/w800/download%20%2842%29.png", link: "https://sfl.gl/mavGY1" , category: "Film"},
+      { name: "Melolo", date: "Sep-22-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgzEyQy28PRqapaYBT0XQqvGu2FptDhfvPpgYzPtVgvmhUZxGH-qom0woaFGzllZXgTzWh0MyuHLF57oFJhinhJ38-rJ6bbYprlvVzWWl7n0e_Bl5lMGPNXSYq5zEO2peJcJvvaXL3KLdZnXuI_sKkFz3SZ4a9uX_8B7SjjzRykTmBXFAbylhfI-qnazhg/w800/download%20%2824%29.png", link: "https://download-premium9.com" , category: "Drama"},
+      { name: "Crunchyroll", date: "Sep-21-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh66IkM8LhbV24WdD0Vy9ksZyPfOhzA5rhSg4HJhOwgXwc2KAIhphRoIpb6LNRNWSMUNFKAPO3wBKW8GbI2eWi2yd42K1VrYS_asNfO98DkOxXwM30hZelZffk9VRQA83J2n-oO9uWA70BFg9CebSUt7GiJ9QbsiBEVNGNafQpVM62F6tcehVm4i_bWnwY/w800/images%20%2840%29.jpeg", link: "https://download-premium10.com" , category: "Anime"},
+      { name: "DongHub", date: "Sep-20-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi3imCxFW2KcCu52_sk57NLCqs_CGYhEP4iEpVyv7DeiWg5WWmQqCHqwoRx235oDFsxHelB0simqjmB7z2Tvvm30GAN4s6HcVBQrzoFcinuDMr4eQG1rPaKJ9O8C5ZkpwqVdPjWIoNyM4mb4-TSM8MrDoOhNQKzKE3PwhfYI8Q5UkV57ZmVub2U7m27k9s/w800/download%20%2838%29.jpeg", link: "https://download-premium11.com" , category: "Drama"},
+      { name: "AnimePlay", date: "Sep-19-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi_4dexhkgX_J4PEceTWi6rd4vLaoDluphes9L75-BYNJAzT7o3KP4rCw1j0NGbIgxqEC0yqfPkQPIIpA8IITwSSXzujD2nqItlbFyy54G9ZpeMCfAjNgdLovhbGo2CK_5QZYf4jvNIZcs9PKOMJJx8R9-zwOR9fWd88MhgvBSN6S8onyhwd9waKk63geU/w800/images%20%284%29.png", link: "https://sfl.gl/0dpUO6" , category: "Anime"},
+      { name: "Grok AI", date: "Sep-18-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhx0BfBoq_en_cDhXZ9TekjmVXYZF0gVsyCZ35vRLg38knkpqdsyYPfZfmNXzwiT7KtCtY8x3aSOj8VNCbpwVNFiJeUA1-CUqnvxU99x1hHV5v7VHE8g6rBlsjQA2KvWv1rMvbE0KSjqCS8RYLOJpfoc_ESjMLhZLAibqroA5rJ3_lgpvR_Zth6wYS8Mh0/w800/images%20%2821%29.png", link: "https://sfl.gl/ZlI0Vx" , category: "Lainnya"},
+      { name: "AI Chat GPT", date: "Sep-17-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh38ILu3t_1dahPcKzD94xkUjBIcIImCEXeh4K4jrwk2BUTleuCwj2FwD2OFcwtbAFtFG8bmn_B6o2xIDJu8cfvj5u0gS_8rNwNOJQggmeVS6Bvqjqgsb_gtwlUKzIceOsxg_At_b7iOpdsRiq2HXkRAjyytO2kfGYMHwTBEkvuvoqbJkP5pf7dh2cWMhA/w800/jebe.png", link: "https://download-premium14.com" , category: "Lainnya"},
+      { name: "AI Chat Smith", date: "Sep-16-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjSAyeUxyjdv7gr1pMyqtwKrJnczrqzj71PI9wNerASXMsxhFI_pzp6pTNPxH5EuruFALzmbI4FPhLb4x4HRY8J_oNeTU-5jgfORfthQfEFAterwap-wPT9DHrBihQRP91JfUcJxPNATxS5LuIjDDQ2Y-fd50UcpShhhmwVNm3v1ninyr_m_fuHg60xCeg/w800/images%20%2823%29.png", link: "https://sfl.gl/DXOg4" , category: "Lainnya"},
+      { name: "Spotify Lite", date: "Sep-15-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjuHAcpoOkjosv4-6AlTzbsIZ8lif1fnjspDbxaoxkRfK6lmJ7cgG5aCe7hn34s1rhR-yk5hWyNdlp7u5SWq1Kf-kAT3IZqQFv5PgEL7B74PqZNxUKYd7_jD91eP1UPGbkl6dXreUIeHBy5BB8mUANuiENE3QPU01J7GubzLE_bWUrue0CoAj-n9_QMpQs/w800/download%20%2841%29.png", link: "https://download-premium16.com" , category: "Musik"},
+      { name: "Photo Effect - LD", date: "Sep-14-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgAvd7aRdCHx68xptp08mR_aUsZap05p6Hcquwkha4ySUNPX6e3NupAfGbZC3GTjxxKhh-gQOiQdODvLoeKyVQoKbYOZcWfaCPewtigiI2-G9pRotOBTVdTUn4rxUhzjlvh-W6Nc1dUpCIKFeI39MeKI-qIQVPH_O0ScDu6-DWOTatDzXXfKkwsISNX-jA/w800/download%20%2813%29.png", link: "https://sfl.gl/cTBX8" , category: "Editing"},
+      { name: "Filmora HD", date: "Sep-13-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNz8yfeGF3x6GVh_LEFcyiAi7Rp6flSUQq2Dgx6Lk3qnmWmXKpV43LPFm-NoErYrZDtroV4D9l4ObOw0JF6224GLnZUt7tqFVRaiCNEP6Q5R6NrZiA42mLB2L4v0T8o0LeA5_v8oOs3PcDsQzX48RwEYXW_lCBLHQw8yLrdVjhx7KMvcN0T3LTIh5jmn0/w800/download%20%2861%29.jpeg", link: "https://download-premium18.com" , category: "Editing"},
+      { name: "SnapEdit", date: "Sep-12-2025", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiKP7Q4aO2lfg0BKzyiIyGwU6UzDtp9MPI-7BYdkIDstc00hSoxTjM6VWRRcvG4a6_TC_1_sKMte_rRy8Y3ZflEaTRe1AkqK5WXsM5HrcPSOoCHrTKIAsq6_FvWdZkqz5f7N6r06KwODUc9Lnw4efR_yYhAWK2bjJubK2_gasaxzdx2SVCw_v7lLvs7xVs/w800/images%20%2878%29.jpeg4", link: "https://sfl.gl/e25Irw" , category: "Editing"},
+      { name: "Node Video", date: "Sep-11-2025", img: "https://ugc.production.linktr.ee/2e0f5d05-bb3b-4a5c-a2c6-01225bce5d74_image.png?io=true&size=thumbnail-stack_v1_0", link: "https://download-premium20.com" , category: "Editing"},
+      { name: "VSCO MOD", date: "Sep-30-2025", img: "https://ugc.production.linktr.ee/37a61562-ab76-4a33-ac0b-36f70ecde38e_image.png?io=true&size=thumbnail-stack_v1_0", link: "https://download-premium1.com" , category: "Editing"},
+      { name: "TimeCut", date: "Sep-29-2025", img: "https://ugc.production.linktr.ee/6e8df43a-55cb-4e69-9f77-69e9cff79baf_image.png?io=true&size=thumbnail-stack_v1_0", link: "https://download-premium2.com" , category: "Editing"},
+      { name: "Pixellab", date: "Sep-11-2025", img: "https://ugc.production.linktr.ee/5630c32b-787c-40ce-8d01-66488dcfd8f0_image.png?io=true&size=thumbnail-stack_v1_0", link: "https://download-premium20.com" , category: "Editing"},
+      { name: "Ibis Paint X", date: "Oct-07-2025", img: "https://ugc.production.linktr.ee/6359fab0-70d9-4b25-9254-7718699b2fe2_image.png?io=true&size=thumbnail-stack_v1_0", link: "https://download-photoai.com" , category: "Editing"}
+    ];
+
+    // Render ke HTML
+    document.getElementById("modGrid").innerHTML = modApps.map(app => `
+      <div class="app-card">
+        <img src="${app.img}" alt="${app.name}">
+        <h4>${app.name}</h4>
+        <small>${app.date}</small><br>
+        <a href="${app.link}" target="_blank" class="download-btn">Download</a>
+      </div>
+    `).join("");
+
+    document.getElementById("premiumList").innerHTML = premiumApps.map(app => `
+      <div class="app-item">
+        <img src="${app.img}" alt="${app.name}">
+        <div class="app-info">
+          <h4>${app.name}</h4>
+          <small>${app.date}</small>
         </div>
-      `;
-        return item;
-      }
+        <a href="${app.link}" target="_blank" class="download-btn">Download</a>
+      </div>
+    `).join("");
+  </script>
 
-      /**
-       * Membuat elemen HTML untuk 1 item FAQ
-       * @param {object|null} data - Data untuk mengisi form (saat edit)
-       */
-      function createFaqElement(data = null) {
-        const item = document.createElement("div");
-        item.className = "dynamic-item faq-item";
-        item.innerHTML = `
-        <button type="button" class="remove-item-btn" onclick="this.parentElement.remove()">×</button>
-        <div class="dynamic-item-grid">
-          <div class="form-group col-full">
-            <label>Pertanyaan</label>
-            <input type="text" class="faq-question" placeholder="Misal: Aman gak min?" required value="${
-              data?.question || ""
-            }">
-          </div>
-          <div class="form-group">
-            <label>Order (Angka)</label>
-            <input type="number" class="faq-order" placeholder="1" required value="${
-              data?.order || ""
-            }">
-          </div>
+<script>
+// 🌫️ Header shadow on scroll
+window.addEventListener('scroll', () => {
+  const header = document.querySelector('header');
+  if (header) header.classList.toggle('scrolled', window.scrollY > 10);
+});
+
+// ✨ Fade-in effect
+const elements = document.querySelectorAll('.fade-in');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+});
+elements.forEach(el => observer.observe(el));
+</script>
+
+
+<!-- 🔘 FLOATING NAVIGATION -->
+<div class="floating-nav">
+  
+  
+</div>
+<style>
+.floating-nav { position:fixed; right:18px; bottom:18px; display:flex; flex-direction:column; gap:10px; z-index:9999; }
+.floating-nav button { width:44px;height:44px;border-radius:50%;border:none;background:#007bff;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(0,0,0,0.12);cursor:pointer;font-size:18px;transition:transform .14s; }
+.floating-nav button:hover { transform:translateY(-4px); }
+
+#store-popup.fadeout {
+  opacity: 0;
+  transform: translate(-50%, 70%) scale(0.95);
+  transition: all 0.35s ease;
+}
+
+</style>
+
+
+<!-- 🔍 SEARCH FUNCTION -->
+<script>
+(function(){
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const clearBtn = document.getElementById('clearSearch');
+  const modGrid = document.getElementById('modGrid');
+  const premiumList = document.getElementById('premiumList');
+
+  function renderResults(mods, premiums) {
+    modGrid.innerHTML = mods.map(app => `
+      <div class='app-card'>
+        <img src='${app.img}' alt='${app.name}'>
+        <h4>${app.name}</h4>
+        <small>${app.date} • ${app.category || ''}</small><br>
+        <a href='${app.link}' target='_blank' class='download-btn'>Download</a>
+      </div>`).join('');
+    premiumList.innerHTML = premiums.map(app => `
+      <div class='app-item'>
+        <img src='${app.img}' alt='${app.name}'>
+        <div class='app-info'>
+          <h4>${app.name}</h4>
+          <small>${app.date} • ${app.category || ''}</small>
         </div>
-      `;
-        return item;
-      }
+        <a href='${app.link}' target='_blank' class='download-btn'>Download</a>
+      </div>`).join('');
+  }
 
-      /*
-    ================================================
-    FUNGSI UTILITAS (Global)
-    ================================================
-    */
+  function performSearch(query){
+    if (!query.trim()){
+      if (window.renderApps) window.renderApps('Semua');
+      return;
+    }
+    const q = query.toLowerCase();
+    const modMatches = (window.modApps||[]).filter(a =>
+      (a.name && a.name.toLowerCase().includes(q)) ||
+      (a.category && a.category.toLowerCase().includes(q))
+    );
+    const premiumMatches = (window.premiumApps||[]).filter(a =>
+      (a.name && a.name.toLowerCase().includes(q)) ||
+      (a.category && a.category.toLowerCase().includes(q))
+    );
+    renderResults(modMatches, premiumMatches);
+    if (modMatches.length + premiumMatches.length === 0){
+      modGrid.innerHTML = '<div style="padding:20px;color:#777;">Tidak ditemukan aplikasi yang cocok.</div>';
+      premiumList.innerHTML = '';
+    }
+  }
 
-      /**
-       * Fungsi untuk mengupload file ke Cloudinary (Reusable)
-       */
-      async function uploadToCloudinary(file) {
-        if (!file) throw new Error("File gambar tidak ditemukan.");
-        if (CLOUDINARY_CLOUD_NAME === "NAMA_CLOUD_ANDA") {
-          throw new Error(
-            "Harap masukkan Cloud Name Cloudinary Anda di dalam skrip."
-          );
-        }
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-        const response = await fetch(
-          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-          { method: "POST", body: formData }
-        );
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(
-            `Gagal upload ke Cloudinary: ${errorData.error.message}`
-          );
-        }
-        const data = await response.json();
-        return data.secure_url;
-      }
+  searchBtn.addEventListener('click', ()=> performSearch(searchInput.value));
+  searchInput.addEventListener('keydown', e => { if(e.key==='Enter') performSearch(searchInput.value); });
+  clearBtn.addEventListener('click', ()=> { searchInput.value=''; performSearch(''); });
+})();
+</script>
 
-      /**
-       * Fungsi untuk menampilkan pesan status
-       * @param {HTMLElement} element - Elemen status (e.g., modStatus)
-       * @param {string} type - "success" atau "error"
-       * @param {string} message - Pesan yang ditampilkan
-       */
-      function setStatus(element, type, message) {
-        element.className = `status-message ${type}`;
-        element.textContent = message;
-      }
 
-      /**
-       * Mengatur status loading tombol
-       * @param {HTMLElement} btn - Tombol submit
-       * @param {HTMLElement} loader - Elemen loader
-       * @param {boolean} isLoading - Status loading
-       * @param {string} text - Teks tombol
-       */
-      function setLoading(btn, loader, isLoading, text) {
-        if (btn) {
-          btn.disabled = isLoading;
-          btn.innerHTML = text;
-        }
-        if (loader) {
-          loader.style.display = isLoading ? "block" : "none";
-        }
-      }
-    </script>
-  </body>
+<!-- ✅ Tombol Store + Popup DatZon Store -->
+<div class="floating-nav">
+  <button id="store-btn" title="DatZon Store"><i class="fas fa-store"></i></button>
+  
+  
+</div>
+
+<style>
+.floating-nav { position:fixed; right:18px; bottom:18px; display:flex; flex-direction:column; gap:10px; z-index:9999; }
+.floating-nav button { width:44px;height:44px;border-radius:50%;border:none;background:#007bff;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(0,0,0,0.12);cursor:pointer;font-size:18px;transition:transform .14s, box-shadow .2s; }
+.floating-nav button:hover { transform:translateY(-4px); box-shadow:0 8px 18px rgba(0,0,0,0.18); }
+
+#store-popup-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); display:none; z-index:9998; opacity:0; transition:opacity 0.3s ease; }
+#store-popup-overlay.show { display:block; opacity:1; }
+
+#store-popup {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, 30%) scale(0.95);
+  background: #fff;
+  width: 90%; max-width: 380px;
+  padding: 20px 18px 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.4s ease;
+  text-align: center;
+  display: none;
+}
+#store-popup.show {
+  display: block;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+#store-popup h3 { font-size:18px; margin-bottom:10px; color:#111; }
+#store-popup p { font-size:14px; color:#333; margin-bottom:14px; }
+#store-popup img { width:100%; border-radius:10px; margin-bottom:14px; box-shadow:0 4px 10px rgba(0,0,0,0.08); }
+.visit-store-btn { display:inline-block; background:#007bff; color:#fff; text-decoration:none; padding:10px 24px; border-radius:50px; font-weight:600; transition:background 0.2s ease, transform 0.2s ease; }
+.visit-store-btn:hover { background:#005fcc; transform:translateY(-2px); }
+.close-popup { position:absolute; top:10px; right:12px; background:none; border:none; font-size:20px; cursor:pointer; color:#777; transition:color 0.2s ease; }
+.close-popup:hover { color:#000; }
+
+#store-popup.fadeout {
+  opacity: 0;
+  transform: translate(-50%, 70%) scale(0.95);
+  transition: all 0.35s ease;
+}
+
+
+#store-popup-overlay {
+  pointer-events: none;
+}
+#store-popup-overlay.show {
+  pointer-events: all;
+}
+
+</style>
+
+<div id="store-popup-overlay"></div>
+<div id="store-popup">
+  <button class="close-popup">&times;</button>
+  <h3>DatZon Store</h3>
+  <p>Sedang mencari produk digital seperti aplikasi premium? Yuk kunjungi store kami dan temukan yang kamu butuhkan! Terima kasih sudah berkunjung 💫</p>
+  <img src="https://cdn.jsdelivr.net/gh/free-whiteboard-online/Free-Erasorio-Alternative-for-Collaborative-Design@662d0982c5c77b37c76580c25d7a7ea164e35e3e/uploads/2025-10-17T06-03-13-089Z-enfe3rcge.png" alt="Poster Store">
+  <a href="https://datahorizonmodz.github.io/store/" target="_blank" class="visit-store-btn">Kunjungi Store</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+const storeBtn = document.getElementById('store-btn');
+const popup = document.getElementById('store-popup');
+const overlay = document.getElementById('store-popup-overlay');
+const closeBtn = document.querySelector('.close-popup');
+
+function closePopup() {
+  popup.classList.add('fadeout');
+  overlay.classList.remove('show');
+  overlay.style.pointerEvents = 'none';
+
+  // Hilangkan fokus dari elemen aktif agar tidak nyangkut (contoh: tombol Kunjungi Store)
+  if (document.activeElement) document.activeElement.blur();
+
+  // Pastikan popup & overlay bener-bener nonaktif setelah animasi
+  setTimeout(() => {
+    popup.style.display = 'none';
+    popup.classList.remove('show', 'fadeout');
+    overlay.style.display = 'none';
+  }, 350);
+}
+
+storeBtn.addEventListener('click', () => {
+  overlay.style.display = 'block';
+  overlay.style.pointerEvents = 'all';
+  popup.style.display = 'block';
+  setTimeout(() => {
+    popup.classList.add('show');
+    overlay.classList.add('show');
+  }, 25);
+});
+
+closeBtn.addEventListener('click', closePopup);
+overlay.addEventListener('click', closePopup);
+</script>
+
+</body>
 </html>
+
+<script>
+// --- Categories ---
+const CATEGORIES = ["Editing","Enhancer","Musik","Film","Anime","Drama","Lainnya"];
+function assignRandomCategories(list) {
+  list.forEach(item => {
+    if (!item.category) {
+      // pseudo-random but stable per page load
+      item.category = CATEGORIES[Math.floor(Math.abs(hashCode(item.name)) % CATEGORIES.length)];
+    }
+  });
+}
+// simple string hash for distribution
+function hashCode(str) {
+  let h = 0;
+  for (let i=0;i<str.length;i++) { h = (h<<5)-h + str.charCodeAt(i); h |= 0; }
+  return h;
+}
+
+// Grab the original arrays (already defined in the page) and assign categories
+if (typeof modApps !== 'undefined') assignRandomCategories(modApps);
+if (typeof premiumApps !== 'undefined') assignRandomCategories(premiumApps);
+
+// Render apps with optional filter
+function renderApps(filter = 'Semua') {
+  const modGrid = document.getElementById('modGrid');
+  const premiumList = document.getElementById('premiumList');
+  if (!modGrid || !premiumList) return;
+  const modToShow = (filter === 'Semua') ? modApps : modApps.filter(a => a.category === filter);
+  const premToShow = (filter === 'Semua') ? premiumApps : premiumApps.filter(a => a.category === filter);
+  modGrid.innerHTML = modToShow.map(app => `
+    <div class="app-card">
+      <img src="${app.img}" alt="${app.name}">
+      <h4>${app.name}</h4>
+      <small>${app.date} • ${app.category}</small><br>
+      <a href="${app.link}" target="_blank" class="download-btn">Download</a>
+    </div>
+  `).join('');
+  premiumList.innerHTML = premToShow.map(app => `
+    <div class="app-item">
+      <img src="${app.img}" alt="${app.name}">
+      <div class="app-info">
+        <h4>${app.name}</h4>
+        <small>${app.date} • ${app.category}</small>
+      </div>
+      <a href="${app.link}" target="_blank" class="download-btn">Download</a>
+    </div>
+  `).join('');
+}
+
+// Setup category buttons
+document.addEventListener('DOMContentLoaded', () => {
+  const btns = document.querySelectorAll('.cat-btn');
+  btns.forEach(b => {
+    b.addEventListener('click', (e) => {
+      btns.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      const cat = b.getAttribute('data-cat');
+      renderApps(cat);
+      // scroll to modGrid for visibility
+      document.getElementById('modGrid').scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+  // initial render
+  renderApps('Semua');
+});
+
+// --- Testimonials ---
+const TESTI_NAMES = ["rafadurzii","kindesky","guskiee","lenasky","zyochi","danzyy","haiken","kentra","junrdiio"];
+const TESTI_PHRASES = [
+  "Work bang am nya, thanks ya 🙏",
+  "Mantap! Lancar di HP ku.",
+  "Gak nyangka sehalus ini tampilannya.",
+  "Beneran ngebantu banget, recommended.",
+  "Keren layoutnya, simple & cepat.",
+  "Nice! Work semua apknya.",
+  "Sesuai harapan, good job.",
+  "Cuman bilang makasih, play work.",
+  "Install ga ribet, thanks bro.",
+  "Bang bstation nya update",
+  "wink yang old asli no limit",
+  "cuman ini yang bisa di percaya",
+  "No virus jirr",
+  "Bang ga ada Ultra Motion?",
+  "Thank you ya bang, dah subrek"
+];
+function pickRandomTestimonials(n=2) {
+  const pool = [];
+  // create more variety by combining names+phrases randomly
+  for (let i=0;i<30;i++) {
+    const name = TESTI_NAMES[Math.floor(Math.random()*TESTI_NAMES.length)];
+    const text = TESTI_PHRASES[Math.floor(Math.random()*TESTI_PHRASES.length)];
+    pool.push({name, text});
+  }
+  // pick n unique
+  const chosen = [];
+  while (chosen.length < n && pool.length>0) {
+    const idx = Math.floor(Math.random()*pool.length);
+    chosen.push(pool.splice(idx,1)[0]);
+  }
+  return chosen;
+}
+
+function renderTestimonials() {
+  const cont = document.getElementById('testimonials-list');
+  if (!cont) return;
+  const items = pickRandomTestimonials(2);
+  cont.innerHTML = items.map(it => `
+    <div class="testi-card">
+      <p>"${it.text}"</p>
+      <span>- ${it.name}</span>
+    </div>
+  `).join('');
+}
+document.addEventListener('DOMContentLoaded', () => renderTestimonials());
+
+// --- Visitor stats (dummy, random each refresh) ---
+document.addEventListener('DOMContentLoaded', () => {
+  const visitsEl = document.getElementById('visits');
+  if (!visitsEl) return;
+  const base = 10000;
+  const rand = Math.floor(Math.random()*5000);
+  visitsEl.textContent = (base + rand).toLocaleString('id');
+});
+
+// --- Floating nav actions ---
+document.addEventListener('DOMContentLoaded', ()=>{
+  const topBtn = document.getElementById('scroll-top');
+  const downBtn = document.getElementById('scroll-down');
+  topBtn.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
+  downBtn.addEventListener('click', ()=> window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'}));
+});
+</script>
